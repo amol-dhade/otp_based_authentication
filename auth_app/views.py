@@ -51,7 +51,7 @@ class LoginView(APIView):
                 phone_number = user.phone_number
                 print(phone_number)
                 send_otp_via_sms(phone_number, otp)
-                return Response({"send":"Two step verification OTP successfully send!!!"},status = status.HTTP_200_OK) 
+                return Response({"send":"Verification OTP successfully send!!!"},status = status.HTTP_200_OK) 
             else:
                 return Response({"No active" : "This account is not active!!"},status=status.HTTP_404_NOT_FOUND)
         else:
@@ -113,23 +113,6 @@ class PasswordTokenCheckApiView(APIView):
                 return Response({'error':'Token is not valid please request a new one'}, status=status.HTTP_401_UNAUTHORIZED)      
             return Response({'success':True, 'message':'Credentials valid', 'uidb64':uidb64,'token':token}, status=status.HTTP_200_OK)
                      
-        except DjangoUnicodeDecodeError as e:
-            if not PasswordResetTokenGenerator().check_token(user):
-                return Response({'error':'Token is not valid please request a new one'}, status=status.HTTP_401_UNAUTHORIZED)
-            
-class PasswordTokenCheckApiView(APIView):
-    def get(self, request, uidb64, token):
-        try:
-            #id = smart_str(urlsafe_base64_decode(uidb64))
-            id = force_str(urlsafe_base64_decode(uidb64))
-            print("user id", id)
-            user = CustomUser.objects.get(id=str(id))
-            if not PasswordResetTokenGenerator().check_token(user, token):
-                return Response({'error':'Token is not valid please request a new one'}, status=status.HTTP_401_UNAUTHORIZED)
-                
-            return Response({'success':True, 'message':'Credentials valid', 'uidb64':uidb64,'token':token}, status=status.HTTP_200_OK)
-            
-            
         except DjangoUnicodeDecodeError as e:
             if not PasswordResetTokenGenerator().check_token(user):
                 return Response({'error':'Token is not valid please request a new one'}, status=status.HTTP_401_UNAUTHORIZED)
